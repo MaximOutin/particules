@@ -11,11 +11,11 @@
 	"SpawnRate": 3,
     "Toggle_gravity": false,
     "Gravity": 5,
-    "SpawnMode": "snow",
-	"Toggle_InScreen":false,
+    "SpawnMode": "rain",
+	"Toggle_InScreen":true,
     "MarginX":-20,
     "MarginY":-20,
 	"ToggleLifetime": true,
-	"DurationTime": 8,
+	"DurationTime": 4,
 	"ToggleDegrade":true
 }
