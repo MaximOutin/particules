@@ -63,5 +63,50 @@ func (g *game) Draw(screen *ebiten.Image) {
 			ebitenutil.DebugPrint(screen, fmt.Sprint(ebiten.CurrentTPS()))
 		}
 
+		if MenuOpen {
+			msg := "\nMenu de sélection"
+			msg += "\nUtilisez les fleches haut/bas pour naviguer et gauche/droite pour modifier.\n"
+
+			if MenuSelection == 0 {
+				msg += "> "
+			} else {
+				msg += "  "
+			}
+			msg += fmt.Sprintf("Spawn Rate : %.2f\n", config.General.SpawnRate)
+
+			if MenuSelection == 1 {
+				msg += "> "
+			} else {
+				msg += "  "
+			}
+			msg += fmt.Sprintf("Gravity : %.2f\n", config.General.Gravity)
+
+			if MenuSelection == 2 {
+				msg += "> "
+			} else {
+				msg += "  "
+			}
+
+			msg += fmt.Sprintf("Mode : %s\n", config.General.SpawnMode)
+
+			if MenuSelection == 3 {
+				msg += "> "
+			} else {
+				msg += "  "
+			}
+			msg += fmt.Sprintf("Random : %t\n", config.General.RandomSpawn)
+
+			if MenuSelection == 4 {
+				msg += "> "
+			} else {
+				msg += "  "
+			}
+			msg += fmt.Sprintf("Degrade : %t\n", config.General.ToggleDegrade)
+
+			ebitenutil.DebugPrint(screen, msg)
+		} else {
+			ebitenutil.DebugPrintAt(screen, "I: Menu", 0, 20)
+		}
+
 	}
 }

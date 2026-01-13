@@ -23,6 +23,7 @@ type Config struct {
 	SpawnMode                string
 	ToggleLifetime           bool
 	DurationTime             float64
+	ToggleDegrade            bool
 }
 
 var General Config

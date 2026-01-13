@@ -1,13 +1,9 @@
 package particles
 
 import (
-	"fmt"
 	"math/rand"
 	"project-particles/config"
 	"project-particles/particle"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 // Update mets à jour l'état du système de particules (c'est-à-dire l'état de
@@ -16,80 +12,35 @@ import (
 // projet.
 // C'est à vous de développer cette fonction.
 var compte float64 = 0
-var change int = 0
-var changecomp int = 0
-
-// cette fonction sert à lire les touches "fleche droit" et "flèche gauche"
-// du clavier indépendamment de la fonction Update
-func (s *System) HandleInput() {
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowRight) {
-		if config.General.SpawnMode == "snow" {
-			config.General.SpawnMode = "rain"
-			fmt.Println("Mode rain active")
-		} else if config.General.SpawnMode == "rain" {
-			config.General.SpawnMode = "default"
-			fmt.Println("Mode default active")
-		} else if config.General.SpawnMode == "default" {
-			config.General.SpawnMode = "spiral"
-			fmt.Println("Mode spiral active")
-		} else if config.General.SpawnMode == "spiral" {
-			config.General.SpawnMode = "circle"
-			fmt.Println("Mode circle active")
-		} else if config.General.SpawnMode == "circle" {
-			config.General.SpawnMode = "snow"
-			fmt.Println("Mode snow active")
-		}
-		if change == 0 {
-			change = 1
-		} else {
-			change = 0
-		}
-	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
-		if config.General.SpawnMode == "snow" {
-			config.General.SpawnMode = "circle"
-			fmt.Println("Mode circle active")
-		} else if config.General.SpawnMode == "circle" {
-			config.General.SpawnMode = "spiral"
-			fmt.Println("Mode spiral active")
-		} else if config.General.SpawnMode == "spiral" {
-			config.General.SpawnMode = "default"
-			fmt.Println("Mode default active")
-		} else if config.General.SpawnMode == "default" {
-			config.General.SpawnMode = "rain"
-			fmt.Println("Mode rain active")
-			//config.General.ToggleLifetime = false
-			//config.General.Toggle_InScreen = true
-
-		} else if config.General.SpawnMode == "rain" {
-			config.General.SpawnMode = "snow"
-			fmt.Println("Mode snow active")
-		}
-		if change == 0 {
-			change = 1
-		} else {
-			change = 0
-		}
-	}
-}
 
 func (s *System) Update() {
-	s.HandleInput()
 	for e := s.Content.Front(); e != nil; {
 		next := e.Next()
 
 		p := e.Value.(*particle.Particle)
 
+		if config.General.ToggleDegrade {
+			// On récupère la taille de la fenêtre pour faire le calcul
+			w := float64(config.General.WindowSizeX)
+			h := float64(config.General.WindowSizeY)
+
+			// Protection division par zéro
+			if w > 0 && h > 0 {
+				// Rouge dépend de la position X (gauche = 0, droite = 1)
+				p.ColorRed = p.PositionX / w
+
+				// Vert dépend de la position Y (haut = 0, bas = 1)
+				p.ColorGreen = p.PositionY / h
+
+				// Bleu est l'inverse de X (gauche = 1, droite = 0)
+				p.ColorBlue = 1.0 - (p.PositionX / w)
+			}
+		}
 		p.PositionX += p.SpeedX
 		if config.General.Toggle_gravity {
 			p.PositionY += p.SpeedY + p.Gravity
 		} else {
 			p.PositionY += p.SpeedY
-		}
-
-		if change != changecomp {
-			s.Content.Init()
-			changecomp = change
 		}
 
 		if config.General.ToggleLifetime {
@@ -101,23 +52,7 @@ func (s *System) Update() {
 		}
 		e = next
 	}
-	if config.General.ToggleDegrade {
-		// On récupère la taille de la fenêtre pour faire le calcul
-		w := float64(config.General.WindowSizeX)
-		h := float64(config.General.WindowSizeY)
 
-		// Protection division par zéro
-		if w > 0 && h > 0 {
-			// Rouge dépend de la position X (gauche = 0, droite = 1)
-			p.ColorRed = p.PositionX / w
-
-			// Vert dépend de la position Y (haut = 0, bas = 1)
-			p.ColorGreen = p.PositionY / h
-
-			// Bleu est l'inverse de X (gauche = 1, droite = 0)
-			p.ColorBlue = 1.0 - (p.PositionX / w)
-		}
-	}
 	compte += config.General.SpawnRate
 
 	for compte >= 1 {
